@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        max-width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        color: #555;
+      }
+
+      input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      button {
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 1rem;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      #responseMessage {
+        text-align: center;
+        margin-top: 1rem;
+        font-weight: bold;
+      }
+
+      @media (max-width: 400px) {
+        .container {
+          width: 90%;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Login</h1>
+      <form id="loginForm">
+        <label for="user">Username:</label>
+        <input
+          type="text"
+          id="user"
+          name="user"
+          required
+        />
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+      <p id="responseMessage"></p>
+    </div>
+    <script>
+      const loginForm = document.getElementById('loginForm');
+      const responseMessage = document.getElementById('responseMessage');
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const user = document.getElementById('user').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          const response = await fetch(
+            'https://login-api-website.vercel.app/login',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ user, password }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.ok) {
+            responseMessage.textContent = 'Login successful!';
+            responseMessage.style.color = 'green';
+
+            if (data.controlPanel) {
+              window.location.href = 'control.html';
+            } else {
+              window.location.href = `welcome.html?user=${encodeURIComponent(
+                user
+              )}`;
+            }
+          } else {
+            responseMessage.textContent = `Login failed: ${data.message}`;
+            responseMessage.style.color = 'red';
+          }
+        } catch (error) {
+          responseMessage.textContent = 'An error occurred during login.';
+          responseMessage.style.color = 'red';
+          console.error('Error:', error);
+        }
+      });
+    </script>
+  </body>
+</html>
